@@ -74,7 +74,7 @@ def jscf_sum(chengfen, peibi, mix_water, layer_thickness):
 st.title('烧结矿质量预测')
 
 # 读取化学成分数据
-file_path = r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\data\回归特征值计算.xlsx'
+file_path = '回归特征值计算.xlsx'
 chengfen_df = hxcf(file_path)
 
 # 读取物料配比数据
@@ -107,37 +107,18 @@ if submitted:
     # 计算特征值
     result_df = jscf_sum(chengfen_df, temp_peibi_df, mix_water, layer_thickness)
 
-    # 显示特征值计算结果
-    st.write("特征值计算结果：")
-    st.dataframe(result_df)
-
     # 加载标准化器
-    try:
-        scaler = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\x_scaler.pkl')
-    except FileNotFoundError:
-        st.error("文件 'x_scaler.pkl' 未找到，请检查文件路径。")
-        st.stop()
-
+    scaler = joblib.load('x_scaler.pkl')
     # 标准化特征
     X_new = scaler.transform(result_df)
 
     # 加载PCA模型
-    try:
-        pca = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\pca_model.pkl')
-    except FileNotFoundError:
-        st.error("文件 'pca_model.pkl' 未找到，请检查文件路径。")
-        st.stop()
-
+    pca = joblib.load('pca_model.pkl')
     # 应用PCA降维
     X_new = pca.transform(X_new)
 
     # 加载最优模型
-    try:
-        best_model = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\best_xgboost_model.pkl')
-    except FileNotFoundError:
-        st.error("文件 'best_xgboost_model.pkl' 未找到，请检查文件路径。")
-        st.stop()
-
+    best_model = joblib.load('best_xgboost_model.pkl')
     # 预测
     y_pred = best_model.predict(X_new)
 
