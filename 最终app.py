@@ -107,7 +107,7 @@ if submitted:
     # 计算特征值
     result_df = jscf_sum(chengfen_df, temp_peibi_df, mix_water, layer_thickness)
     # 将结果数据框中的所有数值列保留两位小数
-    result_df = result_df.round(2)
+    result_df = result_df.round(3)
     # 显示特征值计算结果
     st.write("特征值计算结果：")
     st.dataframe(result_df)
