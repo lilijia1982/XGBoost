@@ -14,6 +14,9 @@ def wlpb(file_path):
 
 # 计算特征值
 def jscf_sum(chengfen, peibi, mix_water, layer_thickness):
+    # 清空相关数据结构
+    result_df = pd.DataFrame()
+
     # 获取成分的"物料"的内容
     wuliao_name_sum = chengfen['物料'].tolist()
 
@@ -74,11 +77,14 @@ def jscf_sum(chengfen, peibi, mix_water, layer_thickness):
 st.title('烧结矿质量预测')
 
 # 读取化学成分数据
-file_path = '回归特征值计算.xlsx'
+file_path = r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\data\回归特征值计算.xlsx'
 chengfen_df = hxcf(file_path)
 
 # 读取物料配比数据
 peibi_df = wlpb(file_path)
+
+# 创建一个空的占位符，用于显示特征值计算结果
+result_placeholder = st.empty()
 
 # 创建用户输入界面
 st.write("请输入各种铁精粉的配比数据进行预测")
@@ -101,30 +107,55 @@ with st.form("input_form"):
 
 # 如果用户提交了表单
 if submitted:
+
+    # 清空之前的特征值计算结果显示
+    result_placeholder.empty()
+
+    # 清空相关数据结构
+    result_df = pd.DataFrame()
+    temp_peibi_df = pd.DataFrame()
+
     # 创建一个临时的配比 DataFrame
     temp_peibi_df = pd.DataFrame([input_ratios], columns=chengfen_df['物料'])
 
     # 计算特征值
     result_df = jscf_sum(chengfen_df, temp_peibi_df, mix_water, layer_thickness)
+
+
     # 将结果数据框中的所有数值列保留两位小数
     result_df = result_df.round(3)
+
     # 显示特征值计算结果
     st.write("特征值计算结果：")
     st.dataframe(result_df)
 
-
     # 加载标准化器
-    scaler = joblib.load('x_scaler.pkl')
+    try:
+        scaler = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\x_scaler.pkl')
+    except FileNotFoundError:
+        st.error("文件 'x_scaler.pkl' 未找到，请检查文件路径。")
+        st.stop()
+
     # 标准化特征
     X_new = scaler.transform(result_df)
 
     # 加载PCA模型
-    pca = joblib.load('pca_model.pkl')
+    try:
+        pca = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\pca_model.pkl')
+    except FileNotFoundError:
+        st.error("文件 'pca_model.pkl' 未找到，请检查文件路径。")
+        st.stop()
+
     # 应用PCA降维
     X_new = pca.transform(X_new)
 
     # 加载最优模型
-    best_model = joblib.load('best_xgboost_model.pkl')
+    try:
+        best_model = joblib.load(r'C:\Users\Administrator\Desktop\conda_PyChrm\烧结杯实验数据回归\基于铁粉基础特性预测\烧结杯质量预测XGBoost\models\best_xgboost_model.pkl')
+    except FileNotFoundError:
+        st.error("文件 'best_xgboost_model.pkl' 未找到，请检查文件路径。")
+        st.stop()
+
     # 预测
     y_pred = best_model.predict(X_new)
 
