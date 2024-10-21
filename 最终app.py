@@ -106,6 +106,10 @@ if submitted:
 
     # 计算特征值
     result_df = jscf_sum(chengfen_df, temp_peibi_df, mix_water, layer_thickness)
+    # 显示特征值计算结果
+    st.write("特征值计算结果：")
+    st.dataframe(result_df)
+
 
     # 加载标准化器
     scaler = joblib.load('x_scaler.pkl')
