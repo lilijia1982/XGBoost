@@ -139,19 +139,19 @@ if submitted:
     # 标准化特征
     X_new = scaler.transform(result_df)
 
-    # 加载PCA模型
-    try:
-        pca = joblib.load('pca_model.pkl')
-    except FileNotFoundError:
-        st.error("文件 'pca_model.pkl' 未找到，请检查文件路径。")
-        st.stop()
+    # # 加载PCA模型
+    # try:
+    #     pca = joblib.load('pca_model.pkl')
+    # except FileNotFoundError:
+    #     st.error("文件 'pca_model.pkl' 未找到，请检查文件路径。")
+    #     st.stop()
 
-    # 应用PCA降维
-    X_new = pca.transform(X_new)
+    # # 应用PCA降维
+    # X_new = pca.transform(X_new)
 
     # 加载最优模型
     try:
-        best_model = joblib.load('best_xgboost_model.pkl')
+        best_model = joblib.load('1026best_xgboost_model.pkl')
     except FileNotFoundError:
         st.error("文件 'best_xgboost_model.pkl' 未找到，请检查文件路径。")
         st.stop()
